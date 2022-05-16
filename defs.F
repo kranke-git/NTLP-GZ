@@ -11,13 +11,14 @@
       integer, parameter :: j_recl=4, k8=8
 
       integer, parameter :: nscl = 2, nvar = (4+nscl)
-      integer, parameter :: maxnx=128,maxny=128,maxnz=128
+c      integer, parameter :: maxnx=256,maxny=256,maxnz=128
+      integer, parameter :: maxnx=256,maxny=256,maxnz=128
       integer, parameter :: maxnz1=maxnz+1,
      + maxnz2=maxnz+2,maxnx2=maxnx+2,maxny2=maxny+2
 
       !Boundary conditions and other parameters
       real :: Uo, Ttop(nscl), Tbot(nscl),qstar(nscl),tsfcc(nscl)
-      real :: grav,t00,fcor,zi,zl,xl,yl,zw1,dpdx
+      real :: grav,t00,fcor,zi,zl,xl,yl,zw1,dpdx, dtfix
       real :: ugcont,vgcont,zo
       integer :: isfc(nscl)
 c     
@@ -68,14 +69,14 @@ c     ----------------------------------------------------------------------
      +     cfl, tzero,
      +     ucfl, vcfl, wcfl
 c     ----------------------------------------------------------------------
-      character*80  path_res, path_sav, path_his, path_prt,
+      character*160  path_res, path_sav, path_his, path_prt,
      +     path_hp, path_sav_hp, path_part, path_ran,
      +     path_v, path_c, path_p, path_h,
      +     path_sav_v, path_sav_c,
      +     path_sav_p, path_sav_h, path_sav_part,
      +     bad_news
       character case_inp*3
-      character*80 path_viz_xy, path_viz_xz, path_viz_yz, path_stuf,
+      character*160 path_viz_xy, path_viz_xz, path_viz_yz, path_stuf,
      +             path_seed
 c     ----------------------------------------------------------------------
       integer ::    myid, numprocs, i_root,

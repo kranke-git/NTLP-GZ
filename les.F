@@ -315,7 +315,7 @@ c
       if(l_root) then
          if (inetcdf .eq. 1) then
             if(mhis  .and. istage .eq. 1)  call write_his_netcdf
-         if(mhis  .and. istage .eq. 1 .and. mtape) call close_his_netcdf
+            if(mhis  .and. istage .eq. 1 ) call close_his_netcdf
          else
             if(mhis  .and. istage .eq. 1)  call write_his(itop)
             if(mhis  .and. istage .eq. 1 .and. mtape) call close_his
@@ -447,10 +447,7 @@ c
 c ---------------- choose fixed or variable time step
 c
       if(ifix_dt .ne. 0) then
-c
-c ------------- if used, change to fit your problem
-c
-        dt_new = 0.5
+        dt_new = dtfix
       else
 c
 c ------------------- new estimate of best time step
@@ -6270,15 +6267,15 @@ c
       dt    = dt_new
       dtg   = dt
       mnout = (mod(it,imean).eq.0).or. (it.eq.1)
-      mtape = (mod(it,itape).eq.0)
+      mtape = (mod(it-1,itape).eq.0)
       micut = (mod(it,itcut).eq.0)
       mviz  = (mod(it,i_viz).eq.0)
       if(ihst .lt. 0) then
          mhis = .false.
       else
-         mhis = (mod(it,ihst).eq.0 .and. it .ge. it_his)
+         mhis = (mod(it-1,ihst).eq.0 .and. it .ge. it_his)
       endif
-       mtrans = (mod(it+1,ihst).eq.0)
+       mtrans = mhis
 
       if (i_viz .lt. 0) then
          msave_v = .false.
@@ -6297,14 +6294,14 @@ c
 c
 c ---------- decide whether viz fields are saved
 c
-      !msave_v = .false.
-      !if(it .ge. itstr .and. mviz .and. i_viz .gt. 0) then
-      !   msave_v = .true.
-      !   if(ionce .eq. 0) then
-      !      ionce = 1
-      !      call open_viz
-      !   endif
-      !endif
+c      !msave_v = .false.
+c      !if(it .ge. itstr .and. mviz .and. i_viz .gt. 0) then
+c      !   msave_v = .true.
+c      !   if(ionce .eq. 0) then
+c      !      ionce = 1
+c      !      call open_viz
+c      !   endif
+c      !endif
       if((i_viz .gt. 0) .and. (it .ge. it_viz_nxt)) then
         call viz_output_filename(it)
         it_viz_nxt = it_viz_nxt + itape
@@ -6312,13 +6309,12 @@ c
 c
 c --------- decide whether history files are to be saved
 c
-      if((ihst .gt. 0) .and. (it .ge. it_his_nxt)) then
+      if( mhis ) then
          if (inetcdf .eq. 1) then
             call open_his_netcdf
          else
             call open_his(it)
          end if
-         it_his_nxt = it_his_nxt + itape
       endif
 c
       return
@@ -7751,7 +7747,7 @@ c
       use fields
       use con_data
       use con_stats
-      character*80 path_res_c
+      character*160 path_res_c
       logical there
 c
 c --------------------- check if file is there
@@ -11909,8 +11905,13 @@ c
      +         Cpp,Mw,Ms,Ru,Gam,Ion,Os,Sal,
      +         radius_init,
      +         grav, t00,fcor,zo,
-     +         vp_init,Tp_init,qf_init
+     +         vp_init,Tp_init,qf_init,dtfix
 
+c     Initialize dtfix -- This will be overwirtten if user sets it in
+c     the namelist. Otherwise gets the default of .5 instead of 0
+c     like Fortran would initialize if nothing is passed
+
+      dtfix = .5
 
       !params.in contains namelists to read
       !open(12, file="./params.in", status="old")
