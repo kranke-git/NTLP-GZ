@@ -5486,7 +5486,7 @@ c
       mwsum_t = 0.0 !Brian 7/30/14
       qstarsum = 0.0
       qstarsum_t = 0.0 
-
+     
 c ------------ note set nmatch in sr. iso so that
 c              it is compatible with conditions here
 c
@@ -5500,11 +5500,11 @@ c
       izi = (50*nnz)/100
       zi  = z(izi)
 c
-      z_lower = zi - 50.0
+      z_lower = 500.0
       t_lower = 300.0
-      z_upper = zi + 50.0
-      t_upper = 308.0
-      slope   = (t_upper - t_lower)/(z_upper - z_lower)
+      z_upper = 650.0
+      slope   = 0.08
+      t_upper = t_lower + slope*(z_upper-z_lower)
 c
       do iz=izs,ize
          do iy=iys,iye
@@ -5516,6 +5516,7 @@ c           u(ix,iy,iz) = ug(iz) - ugal
             e(ix,iy,iz) = 0.0
          enddo
          enddo
+     
          if(z(iz) .le. z_lower) then
            do iy=iys,iye
            do ix=1,nnx
@@ -5541,7 +5542,7 @@ c           u(ix,iy,iz) = ug(iz) - ugal
          endif
          do iy=iys,iye
          do ix=1,nnx
-            t(ix,iy,1,iz) = t_lower
+            !t(ix,iy,1,iz) = t_lower
             t(ix,iy,2,iz) = 0.  !For now just set the initial humidity field to zero
             w(ix,iy,iz)   = 0.
             r1(ix,iy,iz)  = 0.
@@ -5553,7 +5554,7 @@ c           u(ix,iy,iz) = ug(iz) - ugal
          enddo 
          enddo 
       enddo
-c
+c     
 c ------------- set initial random field to be
 c               divergence free
 c
